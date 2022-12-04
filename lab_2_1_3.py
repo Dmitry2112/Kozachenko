@@ -3,6 +3,7 @@ import re
 import matplotlib.pyplot as plt
 from jinja2 import Environment, FileSystemLoader
 import pdfkit
+import os
 
 
 class Report:
@@ -81,7 +82,7 @@ class Report:
         env = Environment(loader=FileSystemLoader('.'))
         j2_t = env.get_template("templ.html")
         html_content = j2_t.render(data)
-        f = open('hello.html', 'w')
+        f = open(output_dir + 'hello.html', 'w')
         f.write(html_content)
         f.close()
 
@@ -129,7 +130,11 @@ class Report:
         ax[1, 1].pie(vac_per_city[:10], labels=cities[:10], textprops={'fontsize': 6})
         ax[1, 1].title.set_text('Доля вакансий по городам')
 
-        plt.savefig('graph.png')
+        cur_dir = os.getcwd()
+        out_dir = os.path.join(cur_dir, output_dir)
+        if not os.path.exists(out_dir):
+            os.makedirs(out_dir)
+        plt.savefig(output_dir + 'graph.png')
 
 
 def clean_string(string):
@@ -161,7 +166,7 @@ def collect_data(file_name, job_name):
         "UZS": 0.0055,
     }
 
-    file_csv = csv.reader(open(file_name, encoding='utf_8_sig'))
+    file_csv = csv.reader(open(work_dir + file_name, encoding='utf_8_sig'))
     list_data = [x for x in file_csv]
     titles = list_data[0]
     values = [x for x in list_data[1:] if x.count('') == 0 and len(x) == len(titles)]
@@ -286,14 +291,18 @@ def collect_data(file_name, job_name):
     return [salary_per_year, job_salary_per_year, total_vac_per_year, job_vac_per_year, final_salary_per_city,
             vac_per_city_with_others]
 
+output_dir = 'output/'
+work_dir = 'work_files/'
 
-file_name = input('Введите название файла: ')
-job_name = input('Введите название профессии: ')
-rep = Report()
-all_dict = collect_data(file_name, job_name)
-rep.generate_image(job_name, all_dict)
-rep.generate_html(job_name, all_dict)
 
-config = pdfkit.configuration(wkhtmltopdf=r'C:\\Program Files\\wkhtmltopdf\\bin\\wkhtmltopdf.exe')
-opt = {'enable-local-file-access': None, 'encoding': 'windows-1251'}
-pdfkit.from_file('hello.html', 'report.pdf', configuration=config, options=opt)
+def main_2_1_3():
+    file_name = input('Введите название файла: ')
+    job_name = input('Введите название профессии: ')
+    rep = Report()
+    all_dict = collect_data(file_name, job_name)
+    rep.generate_image(job_name, all_dict)
+    rep.generate_html(job_name, all_dict)
+
+    config = pdfkit.configuration(wkhtmltopdf=r'C:\\Program Files\\wkhtmltopdf\\bin\\wkhtmltopdf.exe')
+    opt = {'enable-local-file-access': None, 'encoding': 'windows-1251'}
+    pdfkit.from_file(output_dir + 'hello.html', output_dir + 'report.pdf', configuration=config, options=opt)
