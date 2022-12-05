@@ -7,6 +7,20 @@ import os.path
 
 
 class Vacancy:
+    """
+    Класс для представления вакансии
+
+    Attributes:
+        name (str): Название вакансии
+        description (str): Описание вакансии
+        key_skills (str): Навыки
+        experience_id (str): Опыт работы
+        premium (str): Премиум вакансия
+        employer_name (str): Компания
+        salary (str): Зарплата
+        area_name (str): Город
+        published_at (str): Дата публикации вакансии
+    """
     def __init__(self, name, description, key_skills, experience_id, premium, employer_name, salary, area_name, published_at):
         self.name = name
         self.description = description
@@ -20,6 +34,15 @@ class Vacancy:
 
 
 class Salary:
+    """
+    Класс для представления зарплаты
+
+    Attributes:
+       salary_from (str): Нижняя граница вилки оклада
+       salary_to (str): Верхняя граница вилки оклада
+       salary_gross (str): До или после вычета налогов
+       salary_currency (str): Валюта оклада
+    """
     def __init__(self, salary_from, salary_to, salary_gross, salary_currency):
         self.salary_from = salary_from
         self.salary_to = salary_to
@@ -28,12 +51,39 @@ class Salary:
 
 
 class DataSet:
+    """
+    Класс для предствления иформации о вакансиях
+
+    Attributes:
+        file_name (str): Название файла с исходными данными
+        vacancies_objects (str): Вакансии
+    """
     def __init__(self, file_name, vacancies_objects):
         self.file_name = file_name
         self.vacancies_objects = vacancies_objects
 
 
 class InputConnect:
+    """
+    Класс для представления информации пользовательского ввода
+
+    Attributes:
+        file_name (str): Названия csv файла с исходными данными
+        request_param (str): Параметр фильтрации
+        column_title_for_sort (str): Параметр сортировки
+        reversed_sort (str): Порядок сортировки
+        index_parts (str): Диапозон вывода
+        params_input (str): Требуемые столбцы
+        error_msg (str): Сообщение об ошибке
+        salary_req (bool):
+        request_param_ok (bool):
+        reversed_flag (bool): Отвечает за порядок сортировки
+        indexes (list):
+        params (list):
+        indexes_ok (bool):
+        bad_param_found (bool):
+        file_name_ok (bool): Отвечает за корректность имени файла
+    """
     def __init__(self):
         self.file_name = ''
         self.request_param = ''
@@ -52,13 +102,17 @@ class InputConnect:
         self.file_name_ok = True
 
     def read_user_input(self):
+        """
+        Осуществляет считывание пользовательского ввода и уставку значений атрибутам
+        Returns:
+
+        """
         self.file_name = input('Введите название файла: ')
         self.request_param = input('Введите параметр фильтрации: ')
         self.column_title_for_sort = input('Введите параметр сортировки: ')
         self.reversed_sort = input('Обратный порядок сортировки (Да / Нет): ')
         self.index_parts = input('Введите диапазон вывода: ').split()
         self.params_input = input('Введите требуемые столбцы: ')
-
 
         if not (len(self.file_name) > 4 and self.file_name.endswith('.csv') and os.path.exists('work_files/' + self.file_name)):
             self.file_name_ok = False
@@ -95,6 +149,11 @@ class InputConnect:
         self.process_request_params()
 
     def process_request_params(self):
+        """
+        Осуществляет фильтрацию вакинсий по указанному параметру
+        Returns:
+
+        """
         self.request_param_ok = False, False
         if self.request_param == '':
             self.request_param_ok = True, True
@@ -126,6 +185,11 @@ class InputConnect:
                         self.salary_req = float(request_data[1])
 
     def full_check_error_not_found(self):
+        """
+        Осуществляет проверку всех возможных ошибок ввода
+        Returns:
+            bool: успех/неудача проверки
+        """
         if not self.file_name_ok:
             print('название файла некорректно или файл не найден')
             return False
@@ -150,8 +214,12 @@ class InputConnect:
         else:
             return True
 
-
     def standard_process(self):
+        """
+        Осуществляет формирование списка словарей с вакансиями и их отправку на печать
+        Returns:
+
+        """
         title, value = csv_reader('work_files/' + self.file_name)
         data = csv_filler(value, title, dict_for_exact_match, dict_for_items_match, dict_for_substring_match, self.salary_req)
         if len(data) == 0:
@@ -178,6 +246,15 @@ class InputConnect:
 
 
 def csv_reader(file_name):
+    """
+    Осуществляет чтение csv файла с данными о вакансиях
+    Args:
+        file_name (str): Название файла
+
+    Returns:
+        list: Заголовки таблицы с вакансиями
+        list: Список вакансий
+    """
     file_csv = csv.reader(open(file_name, encoding='utf_8_sig'))
     list_data = [x for x in file_csv]
     check_valid_file(list_data)
@@ -187,6 +264,14 @@ def csv_reader(file_name):
 
 
 def check_valid_file(list_data):
+    """
+    Проверяет корректность файла
+    Args:
+        list_data (list): Список вакансий
+
+    Returns:
+
+    """
     if len(list_data) == 1:
         print('Нет данных')
         exit()
@@ -196,6 +281,19 @@ def check_valid_file(list_data):
 
 
 def csv_filler(reader, list_naming, exact_match_dict, items_dict, substring_dict, salary_req):
+    """
+
+    Args:
+        reader:
+        list_naming:
+        exact_match_dict:
+        items_dict:
+        substring_dict:
+        salary_req:
+
+    Returns:
+
+    """
     list_of_dic = []
     for vac in reader:
         dic = {}
@@ -236,6 +334,16 @@ def csv_filler(reader, list_naming, exact_match_dict, items_dict, substring_dict
 
 
 def print_vacancies_table(data_vacancies, indexes, parameters):
+    """
+    Печатает информацию о вакансиях в виде таблицы
+    Args:
+        data_vacancies: Информация о вакансиях
+        indexes: Диапозон вывода
+        parameters: Требуемые столбцы
+
+    Returns:
+
+    """
     table = create_table(data_vacancies)
     actual_range = make_range(indexes, data_vacancies)
     print(table.get_string(fields=['№', *parameters] if parameters.count('') == 0 else table.field_names,
@@ -244,6 +352,15 @@ def print_vacancies_table(data_vacancies, indexes, parameters):
 
 
 def make_range(indexes, data_vacancies):
+    """
+    Создает корректный диапозон
+    Args:
+        indexes (list): Диапозон вывода
+        data_vacancies (list): Информация о вакансиях
+
+    Returns:
+        int: корректный диапозон вывода
+    """
     if len(indexes) == 0:
         return 0, len(data_vacancies)
     elif len(indexes) == 1:
@@ -253,12 +370,32 @@ def make_range(indexes, data_vacancies):
 
 
 def clean_string(string, is_skills):
+    """
+    Очищает строку с информацией о вакансии от лишних пробелов и html тегов, превращает список в единую строку
+    Args:
+        string (str): Значение одного из полей вакансии
+        is_skills (bool): Флаг, сигнализирущий о том, что передана строка с навыками
+
+    Returns:
+        str: "Чистая" строка
+    """
     string = re.sub(r'<[^>]*>', '', string)
     string = ' '.join(string.split(' ')) if is_skills else ' '.join(string.split())
     return string
 
 
 def formatter(row, dic_naming, eng_rus_currency, eng_rus_work_experience):
+    """
+    Форматирует информацию о вакансии, переводит все значения на русский язык
+    Args:
+        row (dict):
+        dic_naming (dict):
+        eng_rus_currency (dict): Словарь с анг/рус валютами
+        eng_rus_work_experience (dict): Словарь с анг/рус опытом работы
+
+    Returns:
+        dict: отформатированную информацию о вакансии
+    """
     salary_gross = {
         'True': 'Без вычета налогов',
         'False': 'С вычетом налогов'
@@ -272,11 +409,11 @@ def formatter(row, dic_naming, eng_rus_currency, eng_rus_work_experience):
                    f'({eng_rus_currency[row["salary_currency"]]}) ({salary_gross[row["salary_gross"]]})'
 
     key_to_func = {
-        'name' : None,
-        'description' : None,
-        'key_skills' : None,
-        table_col_title_exp_id : (lambda exp_value: eng_rus_work_experience[exp_value]),
-        'premium' : None,
+        'name': None,
+        'description': None,
+        'key_skills': None,
+        table_col_title_exp_id: (lambda exp_value: eng_rus_work_experience[exp_value]),
+        'premium': None,
         'employer_name': None,
         table_col_title_salary_info : None,
         'area_name': None,
@@ -294,6 +431,14 @@ def formatter(row, dic_naming, eng_rus_currency, eng_rus_work_experience):
 
 
 def format_for_table(vacancy):
+    """
+    Форматирует данные о вакансии, чтобы они корректно отображались в таблице
+    Args:
+        vacancy (dict): словарь с информацией  о вакансии
+
+    Returns:
+        list: отформатированный список значений вакансии
+    """
     result_list = []
     for key, value in vacancy.items():
         formatted_str = value
@@ -304,6 +449,14 @@ def format_for_table(vacancy):
 
 
 def create_table(data):
+    """
+    Создает таблицу для печати
+    Args:
+        data (list): Список словарей с информацией о вакансиях
+
+    Returns:
+       PrettyTable: результирующая таблица
+    """
     result_table = PrettyTable()
     result_table.field_names = ['№', *data[0].keys()]
     for i in range(len(data)):
@@ -315,6 +468,15 @@ def create_table(data):
 
 
 def sort_dict_by_salary(x, y):
+    """
+    Сортирует вакансии по размеру зарплаты
+    Args:
+        x (dict): Первая вакансия
+        y (dict): Вторая вакансия
+
+    Returns:
+        int: результат стравнения -1 если x меньше y, 1 если x больше y и 0 если они равны
+    """
     currency_to_rub = {
         "AZN": 35.68,
         "BYR": 23.91,
@@ -337,8 +499,16 @@ def sort_dict_by_salary(x, y):
     return -1 if x_rub < y_rub else 1 if x_rub > y_rub else 0
 
 
-def all_are_pos(a):
-    for x in a:
+def all_are_pos(user_range):
+    """
+    Проверяет, что пользователь указал не отрицательный диапозон вывода
+    Args:
+        user_range (list): диапозон вывода
+
+    Returns:
+        bool: False если указан отрицательный диапозон, иначе True
+    """
+    for x in user_range:
         if x < 0:
             return False
     return True
@@ -415,6 +585,11 @@ rus_eng_currency = {}
 rus_eng_work_experience = {}
 
 def main_5_2():
+    """
+    Запускает работу программы, если в пользовательском вводе не обнаружено ошибок
+    Returns:
+
+    """
     for key, value in eng_rus_title.items():
         rus_eng_title[value] = key
 
@@ -431,6 +606,8 @@ def main_5_2():
         exit()
     else:
         user_input.standard_process()
+
+
 '''
 vacancies_medium.csv
 Опыт работы: От 3 до 6 лет

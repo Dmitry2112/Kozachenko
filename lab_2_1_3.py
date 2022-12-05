@@ -7,10 +7,22 @@ import os
 
 
 class Report:
+    """
+    Класс для формирования отчета с графиками и таблицами
+    """
     def __init__(self):
         pass
 
     def generate_html(self, job_name, all_dict):
+        """
+        Генерирует html страницу с таблицами
+        Args:
+            job_name (str): Название профессии
+            all_dict (list): Список словарей со статистикой по вакансиям
+
+        Returns:
+
+        """
         tbl1 = f'<h2>Статистика по годам</h2><table><tr><th>Год</th><th>Средняя зарплата</th><th>Средняя зарплата - {job_name}</th><th>Количество вакансий</th><th>Количество вакансий - {job_name}</th></tr>'
         for y in all_dict[0]:
             tbl1 += '<tr>'
@@ -87,6 +99,15 @@ class Report:
         f.close()
 
     def generate_image(self, job_name, all_dict):
+        """
+        Генерирует png с графиками со статистикой по вакансиям
+        Args:
+            job_name (str): Название профессии
+            all_dict (list): Список словарей со статистикой по вакансиям
+
+        Returns:
+
+        """
         fig, ax = plt.subplots(2, 2)
         # 1 диаграмма
         ax[0, 0].bar([y - 0.2 for y in all_dict[0].keys()], all_dict[0].values(), width=0.4)
@@ -138,21 +159,46 @@ class Report:
 
 
 def clean_string(string):
+    """
+    Очищает строку с информацией о вакансии от лишних пробелов и html тегов
+    Args:
+        string (str): Строка с информацией о вакансии (содержащая лишние символы)
+
+    Returns:
+        str: "чистая" строка
+    """
     string = re.sub(r'<[^>]*>', '', string)
     string = ' '.join(string.split())
     return string
 
 
-def split_and_concat(s):
-    if ' ' not in s and '-' not in s:
-        return s
-    elif ' ' in s:
-        return s.replace(' ', '\n')
+def split_and_concat(city):
+    """
+    Если название города состоит из нескольких слов или содержит '-' делает перенос слов на новую строку
+    Args:
+        city (str): Название города
+
+    Returns:
+        str: Название города с переносами строк (если они были сделаны) или исходную строку
+    """
+    if ' ' not in city and '-' not in city:
+        return city
+    elif ' ' in city:
+        return city.replace(' ', '\n')
     else:
-        return s.replace('-', '-\n')
+        return city.replace('-', '-\n')
 
 
 def collect_data(file_name, job_name):
+    """
+    Формирует данные для дальнейшего использования в составлении отчета
+    Args:
+        file_name (str): Название csv файла с котрого считываются исходные данные
+        job_name (str): Название вакансии
+
+    Returns:
+        list: Список словарей со статистикой по вакансиям
+    """
     currency_to_rub = {
         "AZN": 35.68,
         "BYR": 23.91,
@@ -296,6 +342,11 @@ work_dir = 'work_files/'
 
 
 def main_2_1_3():
+    """
+    Осуществляет работу взаимодействия с пользователем (ввод данных)
+    Returns:
+
+    """
     file_name = input('Введите название файла: ')
     job_name = input('Введите название профессии: ')
     rep = Report()
