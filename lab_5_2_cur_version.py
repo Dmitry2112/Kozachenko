@@ -4,7 +4,6 @@ from functools import cmp_to_key
 import csv
 import re
 import os.path
-import doctest
 
 
 class Vacancy:
@@ -52,7 +51,6 @@ class Salary:
         self.salary_to = salary_to
         self.salary_gross = salary_gross
         self.salary_currency = salary_currency
-
 
     def __str__(self):
         salary_gross = {
@@ -226,7 +224,6 @@ class InputConnect:
         else:
             return True
 
-
     @staticmethod
     def compare_by_exp(x, y):
         """
@@ -239,7 +236,6 @@ class InputConnect:
         """
         return -1 if work_experience_enum[x.experience_id] < work_experience_enum[y.experience_id] else 1 if \
         work_experience_enum[x.experience_id] > work_experience_enum[y.experience_id] else 0
-
 
     @staticmethod
     def compare_by_sal(x, y):
@@ -271,7 +267,6 @@ class InputConnect:
         y_rub = (float(y.salary.salary_from) + float(y.salary.salary_to)) * y_factor / 2
 
         return -1 if x_rub < y_rub else 1 if x_rub > y_rub else 0
-
 
     def standard_process(self):
         """

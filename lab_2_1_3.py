@@ -9,8 +9,23 @@ import os
 class Report:
     """
     Класс для формирования отчета с графиками и таблицами
+
+    Attributes:
+        all_dict (list): Список словарей со статистикой по вакансиям
+
+    >>> rep = Report()
+    >>> rep.collect_data('vacancies_by_year_small.csv', 'Аналитик')
+    >>> print(rep.all_dict)
+    [{2007: 45027}, {2007: 57500}, {2007: 9}, {2007: 1}, {'Москва': 50041, 'Санкт-Петербург': 48750, 'Саратов': 7500}, {'Москва': 0.6666666666666666, 'Санкт-Петербург': 0.2222222222222222, 'Саратов': 0.1111111111111111}]
     """
     def __init__(self):
+        """
+        Инициализирует объект Report
+
+        >>> rep = Report()
+        >>> len(rep.all_dict)
+        0
+        """
         self.all_dict = []
 
     def generate_html(self, job_name):
@@ -129,8 +144,9 @@ class Report:
         values_rev = list(self.all_dict[4].values()).copy()
         keys_rev.reverse()
         values_rev.reverse()
-        ax[1, 0].barh([Report.split_and_concat(keys_rev[city]) for city in range(0, 10)],
-                      [values_rev[city] for city in range(0, 10)])
+        range_lim = 10 if len(self.all_dict[4]) >= 10 else len(self.all_dict[4])
+        ax[1, 0].barh([Report.split_and_concat(keys_rev[city]) for city in range(0, range_lim)],
+                      [values_rev[city] for city in range(0, range_lim)])
         ax[1, 0].grid(axis='x')
         ax[1, 0].title.set_text('Уровень зарплат по городам')
         ax[1, 0].tick_params(axis='y', which='major', labelsize=6)
@@ -158,6 +174,9 @@ class Report:
 
         Returns:
             str: "чистая" строка
+
+        >>> Report.clean_string('<p><strong>Обязанности</strong>')
+        'Обязанности'
         """
         string = re.sub(r'<[^>]*>', '', string)
         string = ' '.join(string.split())
@@ -345,9 +364,16 @@ def main_2_1_3():
     job_name = input('Введите название профессии: ')
     rep = Report()
     rep.collect_data(file_name, job_name)
+    #print(rep.all_dict)
     rep.generate_image(job_name)
     rep.generate_html(job_name)
 
     config = pdfkit.configuration(wkhtmltopdf=r'C:\\Program Files\\wkhtmltopdf\\bin\\wkhtmltopdf.exe')
     opt = {'enable-local-file-access': None, 'encoding': 'windows-1251'}
     pdfkit.from_file(output_dir + 'hello.html', output_dir + 'report.pdf', configuration=config, options=opt)
+
+if __name__ == '__main__':
+    main_2_1_3()
+
+# vacancies_by_year_small.csv
+# Аналитик
