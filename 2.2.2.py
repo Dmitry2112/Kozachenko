@@ -1,4 +1,4 @@
-from lab_5_2 import main_5_2
+from lab_5_2_cur_version import main_5_2
 from lab_2_1_3 import main_2_1_3
 
 
