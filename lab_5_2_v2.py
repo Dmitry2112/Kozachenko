@@ -108,7 +108,7 @@ class DataSet:
             exact_match_dict (dict): Словарь, чтобы сравнивать вакансии значения по строке
             items_dict (dict): Словарь, чтобы обрабатывать список навыков
             substring_dict (dict): Словарь, чтобы обрабатывать дату
-            salary_req (float or None): Отвечает за обработку параметра зарплаты
+            salary_req (float): Отвечает за обработку параметра зарплаты
 
         Returns:
             list: Список отфильтрованных вакансий
@@ -176,15 +176,6 @@ class InputConnect:
         bad_param_found (bool): Отвечает за корректность введенных столбцов
         file_name_ok (bool): Отвечает за корректность имени файла
     """
-    columns_for_exact_match = {'Название', 'Описание', 'Компания', 'Идентификатор валюты оклада',
-                               'Опыт работы', 'Название региона', 'Премиум-вакансия'}
-    columns_for_items_match = {'Навыки'}
-    columns_for_substring_match = {'Дата публикации вакансии'}
-
-    dict_for_exact_match = {}
-    dict_for_items_match = {}
-    dict_for_substring_match = {}
-
     def __init__(self):
         """
         Инициализирует объект InputConnect
@@ -204,16 +195,6 @@ class InputConnect:
         self.indexes_ok = True
         self.bad_param_found = False
         self.file_name_ok = True
-
-        if len(rus_eng_title) == 0:
-            for key, value in eng_rus_title.items():
-                rus_eng_title[value] = key
-
-            for key, value in eng_rus_currency.items():
-                rus_eng_currency[value] = key
-
-            for key, value in eng_rus_work_experience.items():
-                rus_eng_work_experience[value] = key
 
     def read_user_input(self):
         """
@@ -262,7 +243,7 @@ class InputConnect:
 
     def process_request_params(self):
         """
-        Устонавливает значения в словари, используемые для фильтрации
+        Осуществляет фильтрацию вакинсий по указанному параметру
         """
         self.request_param_ok = False, False
         if self.request_param == '':
@@ -275,21 +256,22 @@ class InputConnect:
                 request_data = self.request_param.split(': ')
                 if request_data[0] in rus_eng_title.keys():
                     self.request_param_ok = True, True
+
                 if all(self.request_param_ok):
-                    if request_data[0] in InputConnect.columns_for_exact_match:
+                    if request_data[0] in columns_for_exact_match:
                         req_value = rus_eng_currency[request_data[1]] if request_data[1] in rus_eng_currency else request_data[1]
                         req_value = rus_eng_work_experience[request_data[1]] if request_data[1] in rus_eng_work_experience else req_value
                         req_value = rus_eng_prem_vac[request_data[1]] if request_data[1] in rus_eng_prem_vac else req_value
-                        InputConnect.dict_for_exact_match[rus_eng_title[request_data[0]]] = req_value
-                    elif request_data[0] in InputConnect.columns_for_items_match:
-                        InputConnect.dict_for_items_match[rus_eng_title[request_data[0]]] = request_data[1].split(', ')
-                    elif request_data[0] in InputConnect.columns_for_substring_match:
+                        dict_for_exact_match[rus_eng_title[request_data[0]]] = req_value
+                    elif request_data[0] in columns_for_items_match:
+                        dict_for_items_match[rus_eng_title[request_data[0]]] = request_data[1].split(', ')
+                    elif request_data[0] in columns_for_substring_match:
                         date_parts = request_data[1].split('.')
                         if len(date_parts) != 3:
                             print('Некорректный формат даты')
                         else:
                             date_str = date_parts[2] + '-' + date_parts[1] + '-' + date_parts[0] + 'T'
-                            InputConnect.dict_for_substring_match[rus_eng_title[request_data[0]]] = date_str
+                            dict_for_substring_match[rus_eng_title[request_data[0]]] = date_str
                     elif request_data[0] in columns_for_range_match:
                         self.salary_req = float(request_data[1])
 
@@ -300,7 +282,7 @@ class InputConnect:
             bool: успех/неудача проверки
         """
         if not self.file_name_ok:
-            print('Название файла некорректно или файл не найден')
+            print('название файла некорректно или файл не найден')
             return False
         elif not self.request_param_ok[0]:
             print("Формат ввода некорректен")
@@ -373,7 +355,7 @@ class InputConnect:
         """
         title, value = csv_reader('work_files/' + self.file_name)
         data_set = DataSet(value)
-        data = data_set.generate_vacs_from_strs(title, InputConnect.dict_for_exact_match, InputConnect.dict_for_items_match, InputConnect.dict_for_substring_match, self.salary_req)
+        data = data_set.generate_vacs_from_strs(title, dict_for_exact_match, dict_for_items_match, dict_for_substring_match, self.salary_req)
         if len(data) == 0:
             print('Ничего не найдено')
             exit()
@@ -623,6 +605,10 @@ work_experience_enum = {
     "moreThan6": 3
 }
 
+columns_for_exact_match = {'Название', 'Описание', 'Компания', 'Идентификатор валюты оклада',
+                           'Опыт работы', 'Название региона', 'Премиум-вакансия'}
+columns_for_items_match = {'Навыки'}
+columns_for_substring_match = {'Дата публикации вакансии'}
 columns_for_range_match = {'Оклад'}
 columns_for_prem_match = {'Премиум-вакансия'}
 
@@ -631,6 +617,11 @@ columns_for_date_sort = {'Дата публикации вакансии'}
 columns_for_line_count_sort = {'Навыки'}
 columns_for_salary_sort = {'Оклад'}
 columns_for_work_experience_sort = {'Опыт работы'}
+
+dict_for_exact_match = {}
+dict_for_items_match = {}
+dict_for_substring_match = {}
+salary_req = None
 
 rus_eng_title = {}
 rus_eng_currency = {}
@@ -641,6 +632,15 @@ def main_5_2():
     """
     Запускает работу программы, если в пользовательском вводе не обнаружено ошибок
     """
+    for key, value in eng_rus_title.items():
+        rus_eng_title[value] = key
+
+    for key, value in eng_rus_currency.items():
+        rus_eng_currency[value] = key
+
+    for key, value in eng_rus_work_experience.items():
+        rus_eng_work_experience[value] = key
+
     user_input = InputConnect()
     user_input.read_user_input()
 
@@ -652,12 +652,3 @@ def main_5_2():
 
 if __name__ == '__main__':
     main_5_2()
-
-
-# test input
-# vacancies_medium.csv
-# Оклад: 100000
-# Оклад
-# Нет
-# 1
-# Название, Навыки, Опыт работы, Компания, Оклад

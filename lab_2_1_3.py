@@ -177,6 +177,10 @@ class Report:
 
         >>> Report.clean_string('<p><strong>Обязанности</strong>')
         'Обязанности'
+        >>> Report.clean_string('<p><strong>О нас:</strong></p>')
+        'О нас:'
+        >>> Report.clean_string('<li>Участвовать в приемке в эксплуатацию нового, модернизированного оборудования;</li>')
+        'Участвовать в приемке в эксплуатацию нового, модернизированного оборудования;'
         """
         string = re.sub(r'<[^>]*>', '', string)
         string = ' '.join(string.split())
@@ -191,6 +195,9 @@ class Report:
 
         Returns:
             str: Название города с переносами строк (если они были сделаны) или исходную строку
+
+        >>> Report.split_and_concat('Москва')
+        'Москва'
         """
         if ' ' not in city and '-' not in city:
             return city
@@ -364,13 +371,14 @@ def main_2_1_3():
     job_name = input('Введите название профессии: ')
     rep = Report()
     rep.collect_data(file_name, job_name)
-    #print(rep.all_dict)
+    print(rep.all_dict)
     rep.generate_image(job_name)
     rep.generate_html(job_name)
 
     config = pdfkit.configuration(wkhtmltopdf=r'C:\\Program Files\\wkhtmltopdf\\bin\\wkhtmltopdf.exe')
     opt = {'enable-local-file-access': None, 'encoding': 'windows-1251'}
     pdfkit.from_file(output_dir + 'hello.html', output_dir + 'report.pdf', configuration=config, options=opt)
+
 
 if __name__ == '__main__':
     main_2_1_3()
