@@ -4,6 +4,8 @@ from functools import cmp_to_key
 import csv
 import re
 import os.path
+import cProfile
+import pstats
 
 
 class Vacancy:
@@ -153,6 +155,17 @@ class DataSet:
                                            dic['premium'], dic['employer_name'], sal, dic['area_name'],
                                            datetime.datetime.strptime(dic['published_at'], '%Y-%m-%dT%H:%M:%S%z')))
         return list_of_vac
+
+
+def profile(func):
+    """Decorator for run function profile"""
+    def wrapper(*args, **kwargs):
+        profile_filename = func.__name__ + '.prof'
+        profiler = cProfile.Profile()
+        result = profiler.runcall(func, *args, **kwargs)
+        profiler.dump_stats(profile_filename)
+        return result
+    return wrapper
 
 
 class InputConnect:
@@ -367,6 +380,7 @@ class InputConnect:
 
         return -1 if x_rub < y_rub else 1 if x_rub > y_rub else 0
 
+    @profile
     def standard_process(self):
         """
         Осуществляет формирование списка вакансий и их отправку на печать
@@ -494,6 +508,24 @@ def clean_string(string, is_skills):
     return string
 
 
+# def convert_datetime_to_dmy(dt):
+#     return dt.strftime('%d.%m.%Y')
+
+
+def convert_datetime_to_dmy_v2(dt: datetime.datetime):
+    return f'{dt.day:02}.{dt.month:02}.{dt.year}'
+
+
+# days = ['00', '01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12', '13', '14',
+#         '15', '16', '17', '18', '19', '20', '21', '22', '23', '24', '25', '26', '27', '28', '29', '30', '31']
+#
+# months = ['00', '01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12']
+
+
+# def convert_datetime_to_dmy_v3(dt: datetime.datetime):
+#     return days[dt.day] + '.' + months[dt.month] + '.' + str(dt.year)
+
+
 def formatter(vac, eng_rus_work_experience):
     """
     Форматирует информацию о вакансии, переводит все значения на русский язык
@@ -514,7 +546,7 @@ def formatter(vac, eng_rus_work_experience):
     result_dic[eng_rus_title['employer_name']] = vac.employer_name
     result_dic['Оклад'] = str(vac.salary)
     result_dic[eng_rus_title['area_name']] = vac.area_name
-    result_dic[eng_rus_title['published_at']] = vac.published_at.strftime('%d.%m.%Y')
+    result_dic[eng_rus_title['published_at']] = convert_datetime_to_dmy_v2(vac.published_at)
     return result_dic
 
 
@@ -637,6 +669,7 @@ rus_eng_currency = {}
 rus_eng_work_experience = {}
 
 
+
 def main_5_2():
     """
     Запускает работу программы, если в пользовательском вводе не обнаружено ошибок
@@ -652,6 +685,8 @@ def main_5_2():
 
 if __name__ == '__main__':
     main_5_2()
+    p = pstats.Stats('standard_process.prof')
+    p.sort_stats('calls').print_stats()
 
 
 # test input
