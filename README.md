@@ -7,3 +7,6 @@
 ![img_4.png](img/img_4.png)
 ![img_5.png](img/img_5.png)
 ![img_6.png](img/img_6.png)
+
+csv файлы, разделенные по годам
+![img_7.png](img/img_7.png)
