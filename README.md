@@ -10,3 +10,12 @@
 
 csv файлы, разделенные по годам
 ![img_7.png](img/img_7.png)
+
+Скорость работы без многопроцессорной обработки
+![img_8.png](img/img_8.png)
+
+Скорость работы с использованием Multiprocessing
+![img_9.png](img/img_9.png)
+
+Скорость работы с использованием Concurrent futures
+![img_10.png](img/img_10.png)
