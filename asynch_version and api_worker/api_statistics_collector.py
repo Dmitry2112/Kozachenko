@@ -40,4 +40,4 @@ class ApiCollector:
         return pd.concat(final_dataframe_array, ignore_index=True)
 
 
-ApiCollector.collect_api().to_csv('API_3_3_3.csv')
+ApiCollector.collect_api().to_csv('vacancies_for_api.csv', encoding='utf-8')
