@@ -1,7 +1,5 @@
 from asynchronous_statistics_collector import AsynchCollector
 
-#file_name = "vacancies_by_year.csv"
-
 
 def main():
     file_name = input('Введите название файла: ')

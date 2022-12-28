@@ -1,7 +1,6 @@
 import math
 import pandas as pd
 from statistics_for_one_year import StatisticsForOneYear
-
 from statistics_for_one_year import StatisticsForOneYearInfo
 
 

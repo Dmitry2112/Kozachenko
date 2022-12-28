@@ -1,4 +1,3 @@
-from statistics_for_one_year import StatisticsForOneYear
 import pandas as pd
 
 
